@@ -1,0 +1,45 @@
+resources:
+  jobs:
+    healthcare_sample_etl:
+      name: "[${bundle.target}] Healthcare Sample Claims ETL"
+      description: >
+        Sample ETL over HealthVerity synthetic medical/pharmacy claims.
+        Extract -> transform/clean -> load monthly state-level aggregates.
+        Educational/demo only; source data is synthetic and non-production.
+
+      parameters:
+        - name: catalog
+          default: ${var.catalog}
+        - name: schema
+          default: ${var.schema}
+        - name: source_table
+          default: ${var.source_table}
+
+      # Serverless compute (no job_clusters) for notebook tasks
+      tasks:
+        - task_key: extract
+          notebook_task:
+            notebook_path: ../src/extract.py
+            base_parameters:
+              catalog: "{{job.parameters.catalog}}"
+              schema: "{{job.parameters.schema}}"
+              source_table: "{{job.parameters.source_table}}"
+
+        - task_key: transform
+          depends_on:
+            - task_key: extract
+          notebook_task:
+            notebook_path: ../src/transform.py
+            base_parameters:
+              catalog: "{{job.parameters.catalog}}"
+              schema: "{{job.parameters.schema}}"
+
+        - task_key: load
+          depends_on:
+            - task_key: transform
+          run_if: ALL_SUCCESS
+          notebook_task:
+            notebook_path: ../src/load.py
+            base_parameters:
+              catalog: "{{job.parameters.catalog}}"
+              schema: "{{job.parameters.schema}}"
