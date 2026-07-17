@@ -19,7 +19,7 @@ staging_table = f"{catalog}.{schema}.hc_claims_staging"
 
 from pyspark.sql import functions as F
 
-# Select claim/ops fields only (synthetic demo dataset; keep payload focused)ddd rtr
+# Select claim/ops fields only (synthetic demo dataset; keep payload focused NEw)
 columns = [
     "hvid",
     "claim_id",
