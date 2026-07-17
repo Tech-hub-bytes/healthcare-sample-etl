@@ -57,7 +57,7 @@ cleaned = (
     )
 )
 
-# Keep analytic columns
+# Keep analytic columns add
 output_cols = [
     "hvid",
     "claim_id",
